@@ -3,27 +3,25 @@ import common
         
 
 def df_search(map):
-	found = False
-	# PUT YOUR CODE HERE
-	# access the map using "map[y][x]"
-	# y between 0 and common.constants.MAP_HEIGHT-1
-	# x between 0 and common.constants.MAP_WIDTH-1
-	x, y = find_start(map)
-	print ("x: ", x)
-	print ("y: ", y)
-	pathx = []
-	pathy = []
-	p = push_nodes(map, y, x, pathx, pathy)
-	print (p)
-	return p and set_path(map, pathx, pathy)
+        found = False
+        # PUT YOUR CODE HERE
+        # access the map using "map[y][x]"
+        # y between 0 and common.constants.MAP_HEIGHT-1
+        # x between 0 and common.constants.MAP_WIDTH-1
+        x, y = find_start(map)
+        pathx = []
+        pathy = []
+        p = push_nodes(map, y, x, pathx, pathy)
+        print (p)
+        return p and set_path(map, pathx, pathy)
 
 def bf_search(map):
-	found = False;
-	# PUT YOUR CODE HERE
-	# access the map using "map[y][x]"
-	# y between 0 and common.constants.MAP_HEIGHT-1
-	# x between 0 and common.constants.MAP_WIDTH-1
-	return bfs_helper(map)
+        found = False;
+        # PUT YOUR CODE HERE
+        # access the map using "map[y][x]"
+        # y between 0 and common.constants.MAP_HEIGHT-1
+        # x between 0 and common.constants.MAP_WIDTH-1
+        return bfs_helper(map)
 
 
 #find the start state:
@@ -37,16 +35,51 @@ def bfs_helper(map):
     x, y = find_start(map)
     start = [x,y]
     stack = []
-    stack.append([y,x])
+    stack.append([y,x,-1,-1])
     path = []
-    path.append([y,x])
+#    path.append([y,x])
     parent = []
-    parent.append([-1,-1])
+    parent_stack = []
+    parent_stack.append([-1,-1])
     end = []
-    return bfs(map, path, parent,stack,start, end) and set_path_bfs(map, path, parent, start, end)
+    return bfs(map, path, parent, stack,  end) and set_path_bfs(map, path, parent, start, end)
+
+def bfs(map, path, parent, stack, end):
+        if not stack:
+                return False
+        y = stack[0][0]
+        x = stack[0][1]
+        p_y = stack[0][2]
+        p_x = stack[0][3]
+        stack.pop(0)
+        if((y < 0) or
+                (y >= len(map)) or
+                (x < 0) or 
+                (x >= len(map[0]))):
+                return bfs(map, path, parent, stack, end)
+        if (map[y][x] == 3):
+                map[y][x] = 4
+                parent.append([p_y, p_x])
+                path.append([y,x])
+                end.append([y,x])
+                return True        
+        if (map[y][x] == 1):
+                return bfs(map,path, parent, stack, end)  
+        if(map[y][x] == 4):
+                parent.append([p_y, p_x]);
+                path.append([y, x])
+                return bfs(map, path, parent, stack, end)
+        if(map[y][x] == 0 or map[y][x] == 2):
+                path.append([y,x])
+                parent.append([p_y, p_x])
+                map[y][x] = 4
+                stack.append([y, x + 1, y, x])
+                stack.append([y + 1, x, y, x])
+                stack.append([y, x - 1, y, x])
+                stack.append([y - 1, x, y, x])
+                return bfs(map, path, parent, stack, end)        
         
-        
-def bfs(map, path, parent, stack, start, end):
+def bfs2(map, path, parent, stack, start, end):
     if not stack:
         return False
     y = stack[0][0]
@@ -56,7 +89,7 @@ def bfs(map, path, parent, stack, start, end):
         map[y][x] = 4
         return True    
     if(map[y][x] == 4):
-        return bfs(map, path, parent,stack, start, end)
+        return bfs2(map, path, parent,stack, start, end)
         
     if (map[y][x] == 0 or map[y][x] == 2):
         map[y][x] = 4
@@ -65,11 +98,8 @@ def bfs(map, path, parent, stack, start, end):
         r = stack_append(map, stack, path, parent, end, [y,x], y, x - 1)
         s = stack_append(map, stack, path, parent, end, [y,x], y - 1, x)
 
-        return bfs(map, path, parent, stack, start, end)
+        return bfs2(map, path, parent, stack, start, end)
 
-def deep_pop(stack, path, x,y):
-        while (path and stack and ([x,y]!= path[0])):
-                path.pop(0)
                 
 def stack_append(map, stack,path, parent, end, curr_parent, y,x):
     if((y >= 0 ) and
@@ -131,7 +161,6 @@ def set_path_bfs(map, path, parent, start, end):
         getDest = False
         j = []
         for i in range(len(path) - 1,-1, -1):
-                #print(parent[i])
                 if (getDest == False):
                     if (path[i] == end[0]):
                         getDest = True
@@ -190,24 +219,25 @@ a_map =[[0,0,0,0,0,0,0,0,0,0],
         [0,1,1,1,1,1,1,1,2,0],
         [0,0,0,0,0,0,0,0,1,0]]      
 
+
 #print(bf_search(b_map))
-#def print_map(a_map):
-#        for i in range(0, len(a_map)):
-#                for j in range(0, len(a_map[0])):
-#                        print (a_map[i][j], end="")
-#                print ('\t')
+def print_map(a_map):
+        for i in range(0, len(a_map)):
+                for j in range(0, len(a_map[0])):
+                        print (a_map[i][j], end="")
+                print ('\t')
 
-#h = bf_search(a_map)
-#print(h)
-#print_map(a_map)
+h = bf_search(a_map)
+print(h)
+print_map(a_map)
 
-#j = bf_search(ap_map)
-#print(j)
-#print_map(ap_map)
+j = bf_search(ap_map)
+print(j)
+print_map(ap_map)
 
-#j = bf_search(b_map)
-#print(j)
-#print_map(b_map)
+j = bf_search(b_map)
+print(j)
+print_map(b_map)
 
 
 
