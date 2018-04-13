@@ -1,4 +1,3 @@
-from collections import deque
 import common
         
 
@@ -8,12 +7,12 @@ def df_search(map):
         # access the map using "map[y][x]"
         # y between 0 and common.constants.MAP_HEIGHT-1
         # x between 0 and common.constants.MAP_WIDTH-1
-        x, y = find_start(map)
-        pathx = []
-        pathy = []
-        p = push_nodes(map, y, x, pathx, pathy)
-        print (p)
-        return p and set_path(map, pathx, pathy)
+        if find_start(map):
+            x, y = find_start(map)
+        else:
+            return False
+        path = []
+        return dfs(map, y, x, path) and set_path(map, path)
 
 def bf_search(map):
         found = False;
@@ -21,30 +20,28 @@ def bf_search(map):
         # access the map using "map[y][x]"
         # y between 0 and common.constants.MAP_HEIGHT-1
         # x between 0 and common.constants.MAP_WIDTH-1
-        return bfs_helper(map)
+        if find_start(map):
+            x, y = find_start(map)
+        else:
+            return False
+        stack = []
+        stack.append([y,x,-1,-1])
+        path = []
+        end = []
+        v = bfs(map, path, stack, end)
+        print("v ", v)
+        return v and set_path_bfs(map, path, end)
 
 
 #find the start state:
 def find_start(map):
-    for y in range(0, common.constants.MAP_HEIGHT - 1):
-        for x in range(0, common.constants.MAP_WIDTH - 1):
+    for y in range(0, len(map) - 1):
+        for x in range(0, len(map[0]) - 1):
             if (map[y][x] == 2):
                 return x, y
 
-def bfs_helper(map):
-    x, y = find_start(map)
-    start = [x,y]
-    stack = []
-    stack.append([y,x,-1,-1])
-    path = []
-#    path.append([y,x])
-    parent = []
-    parent_stack = []
-    parent_stack.append([-1,-1])
-    end = []
-    return bfs(map, path, parent, stack,  end) and set_path_bfs(map, path, parent, start, end)
 
-def bfs(map, path, parent, stack, end):
+def bfs(map, path, stack, end):
         if not stack:
                 return False
         y = stack[0][0]
@@ -56,127 +53,80 @@ def bfs(map, path, parent, stack, end):
                 (y >= len(map)) or
                 (x < 0) or 
                 (x >= len(map[0]))):
-                return bfs(map, path, parent, stack, end)
+                return bfs(map, path, stack, end)
         if (map[y][x] == 3):
                 map[y][x] = 4
-                parent.append([p_y, p_x])
-                path.append([y,x])
-                end.append([y,x])
+                path.append([y, x, p_y, p_x])
+                end.append(y)
+                end.append(x)
                 return True        
         if (map[y][x] == 1):
-                return bfs(map,path, parent, stack, end)  
-        if(map[y][x] == 4):
-                parent.append([p_y, p_x]);
-                path.append([y, x])
-                return bfs(map, path, parent, stack, end)
-        if(map[y][x] == 0 or map[y][x] == 2):
-                path.append([y,x])
-                parent.append([p_y, p_x])
+                return bfs(map,path, stack, end)  
+        if (map[y][x] == 4):
+                path.append([y, x, p_y, p_x])
+                return bfs(map, path, stack, end)
+        if (map[y][x] == 0 or map[y][x] == 2):
+                path.append([y, x, p_y, p_x])
                 map[y][x] = 4
                 stack.append([y, x + 1, y, x])
                 stack.append([y + 1, x, y, x])
                 stack.append([y, x - 1, y, x])
                 stack.append([y - 1, x, y, x])
-                return bfs(map, path, parent, stack, end)        
+                return bfs(map, path, stack, end)        
         
-def bfs2(map, path, parent, stack, start, end):
-    if not stack:
-        return False
-    y = stack[0][0]
-    x = stack [0][1]   
-    stack.pop(0)
-    if (map[y][x] == 3):
-        map[y][x] = 4
-        return True    
-    if(map[y][x] == 4):
-        return bfs2(map, path, parent,stack, start, end)
-        
-    if (map[y][x] == 0 or map[y][x] == 2):
-        map[y][x] = 4
-        v = stack_append(map, stack, path, parent, end, [y,x], y,x + 1)
-        w = stack_append(map, stack, path, parent, end, [y,x], y + 1, x)
-        r = stack_append(map, stack, path, parent, end, [y,x], y, x - 1)
-        s = stack_append(map, stack, path, parent, end, [y,x], y - 1, x)
 
-        return bfs2(map, path, parent, stack, start, end)
-
-                
-def stack_append(map, stack,path, parent, end, curr_parent, y,x):
-    if((y >= 0 ) and
-        (y < len(map)) and
-        (x >= 0) and
-        (x < len(map[0])) and
-        ((map[y][x] == 0 or map[y][x] == 3))):
-            if (map[y][x] == 0):
-                parent.append(curr_parent)
-                path.append([y,x])            
-                stack.append([y,x])
-            elif(map[y][x] == 4):
-                parent.append(curr_parent)
-                path.append([y,x])
-            elif(map[y][x] == 3):
-                parent.append(curr_parent)
-                path.append([y,x])
-                stack.append([y,x])
-                end.append([y,x])
-
-
-
-def push_nodes(map, y, x, pathx, pathy):
+def dfs(map, y, x, path):
     if ((y < 0)
         or (x < 0)
         or (y >= len(map))
         or (x >= len(map[0]))
-        or (map[y][x] == 4)
-        or (map[y][x] == 5)):
+        or (map[y][x] == 4)):
         return False
     if (map[y][x] == 1):
         return False 
     if (map[y][x] == 3):
-        pathx.append(x)
-        pathy.append(y)
+        path.append([y,x])
         return True
     if (map[y][x] == 0 or map[y][x] == 2):
         map[y][x] = 4
-        v = (push_nodes(map, y, x + 1, pathx, pathy) or
-         push_nodes(map, y + 1, x, pathx, pathy) or
-         push_nodes(map, y, x - 1, pathx, pathy) or
-         push_nodes(map, y - 1, x, pathx, pathy))
+        v = (dfs(map, y, x + 1, path) or
+         dfs(map, y + 1, x, path) or
+         dfs(map, y, x - 1, path) or
+         dfs(map, y - 1, x, path))
         if v:
-                pathx.append(x)
-                pathy.append(y)
+                path.append([y,x])
         return v
 
-def set_path(map, pathx,pathy):
-        if pathx:
-                for i in range(0, len(pathx)):
-                        x = pathx[i]
-                        y = pathy[i]
+def set_path(map, path):
+        if path:
+                for i in range(0, len(path)):
+                        y = path[i][0]
+                        x = path[i][1]
                         map[y][x] = 5
                 return True
         else:
                 return False
 
-def set_path_bfs(map, path, parent, start, end):
+def set_path_bfs(map, path, end):
         getDest = False
         j = []
         for i in range(len(path) - 1,-1, -1):
+                currPath = [path[i][0], path[i][1]]
                 if (getDest == False):
-                    if (path[i] == end[0]):
+                    if ( currPath == end):
                         getDest = True
-                        y = end[0][0]
-                        x = end[0][1]                         
+                        y = end[0]
+                        x = end[1]                         
                         map[y][x] = 5
-                        j = parent[i]
+                        j = [path[i][2], path[i][3]]
                 else:
-                    if path[i] == j:
+                    if currPath == j:
                             y = path[i][0]
                             x = path[i][1] 
-                            j = parent[i]
+                            j = [path[i][2], path[i][3]]
                             map[y][x] = 5
         return True
 
-        
 
 b_map = [
         [0,0,0,0,0,0,0,0,0,0],
@@ -226,6 +176,20 @@ def print_map(a_map):
                 for j in range(0, len(a_map[0])):
                         print (a_map[i][j], end="")
                 print ('\t')
+'''
+h = df_search(a_map)
+print(h)
+print_map(a_map)
+
+
+j = df_search(ap_map)
+print(j)
+print_map(ap_map)
+
+j = df_search(b_map)
+print(j)
+print_map(b_map)
+'''
 
 h = bf_search(a_map)
 print(h)
@@ -238,6 +202,13 @@ print_map(ap_map)
 j = bf_search(b_map)
 print(j)
 print_map(b_map)
+
+
+
+
+
+
+
 
 
 
