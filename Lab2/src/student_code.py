@@ -38,18 +38,11 @@ def manhattan_distance(map, end_y, end_x, man_dist):
 			if (map[i][j] == 0 or
 				map[i][j] == 2 or 
 				map[i][j] == 3):
-				if (end_x > j):
-					x_dist = end_x - j
-				else: 
-					x_dist = j - end_x 
-				if(end_y > i):
-					y_dist = end_y - i
-				else:
-					y_dist = i - end_y
+				x_dist = abs(end_x - j)
+				y_dist = abs(end_y - i)
 				man_dist[i].append(x_dist + y_dist)
 			else:
 				man_dist[i].append(-1)
-
 
 
 def astar(map, path, frontier, man_dist):
@@ -60,7 +53,7 @@ def astar(map, path, frontier, man_dist):
 	x = curr_node[1]
 	p_y = curr_node[2]
 	p_x = curr_node[3]
-	dist = curr_node[4]
+	dist = curr_node[4]	
 	if (map[y][x] == 4 or map[y][x] == 1):
 		return astar(map, path, frontier, man_dist)
 	if (map[y][x] == 3):
