@@ -28,9 +28,7 @@ def bf_search(map):
         stack.append([y,x,-1,-1])
         path = []
         end = []
-        v = bfs(map, path, stack, end)
-        print("v ", v)
-        return v and set_path_bfs(map, path, end)
+        return bfs(map, path, stack, end) and set_path_bfs(map, path, end)
 
 
 #find the start state:
@@ -60,11 +58,8 @@ def bfs(map, path, stack, end):
                 end.append(y)
                 end.append(x)
                 return True        
-        if (map[y][x] == 1):
+        if (map[y][x] == 1 or map[y][x] == 4):
                 return bfs(map,path, stack, end)  
-        if (map[y][x] == 4):
-                path.append([y, x, p_y, p_x])
-                return bfs(map, path, stack, end)
         if (map[y][x] == 0 or map[y][x] == 2):
                 path.append([y, x, p_y, p_x])
                 map[y][x] = 4
@@ -95,6 +90,7 @@ def dfs(map, y, x, path):
          dfs(map, y - 1, x, path))
         if v:
                 path.append([y,x])
+                
         return v
 
 def set_path(map, path):
@@ -128,89 +124,4 @@ def set_path_bfs(map, path, end):
         return True
 
 
-b_map = [
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,1,0,1,1,1,1,1,1],
-        [0,2,1,0,1,0,0,0,0,0],
-        [1,1,1,0,1,0,1,1,1,0],
-        [0,0,0,0,1,0,1,0,1,0],
-        [0,0,1,0,1,0,1,0,1,0],
-        [0,0,1,0,0,0,1,0,1,0],
-        [0,0,1,1,1,1,1,0,1,0],
-        [0,0,0,0,0,0,0,0,1,0],
-        [0,0,1,1,1,1,1,1,1,0],
-        [0,0,1,0,0,0,1,0,3,1],
-        [1,0,0,0,1,0,1,0,0,1]]
 
-ap_map = [
-        [2,0,0,0,0,0,0,0,0,0],
-        [0,1,0,1,1,1,1,1,1,1],
-        [0,1,0,0,0,0,0,0,0,0],
-        [0,1,0,1,1,1,1,1,1,1],
-        [0,1,1,1,0,0,0,0,0,1],
-        [0,1,0,1,0,1,0,1,1,0],
-        [0,1,0,1,0,1,0,0,0,0],
-        [0,1,0,0,0,1,1,1,1,0],
-        [0,0,1,1,1,1,1,1,1,0],
-        [1,0,1,1,1,1,1,1,1,0],
-        [1,0,1,1,1,1,1,1,1,0],
-        [1,0,0,0,0,0,0,0,0,3]]
-
-a_map =[[0,0,0,0,0,0,0,0,0,0],
-        [1,1,1,1,1,1,0,1,0,1],
-        [0,3,0,0,0,1,0,1,0,1],
-        [1,1,1,1,0,1,0,1,0,1],
-        [0,0,0,1,0,1,0,1,0,1],
-        [0,1,0,0,0,1,0,1,0,1],
-        [1,1,1,1,0,1,0,1,0,1],
-        [0,0,0,0,0,0,0,1,0,1],
-        [0,1,1,1,1,1,1,1,0,0],
-        [0,0,0,0,0,0,0,1,0,1],
-        [0,1,1,1,1,1,1,1,2,0],
-        [0,0,0,0,0,0,0,0,1,0]]      
-
-
-#print(bf_search(b_map))
-def print_map(a_map):
-        for i in range(0, len(a_map)):
-                for j in range(0, len(a_map[0])):
-                        print (a_map[i][j], end="")
-                print ('\t')
-'''
-h = df_search(a_map)
-print(h)
-print_map(a_map)
-
-
-j = df_search(ap_map)
-print(j)
-print_map(ap_map)
-
-j = df_search(b_map)
-print(j)
-print_map(b_map)
-'''
-
-h = bf_search(a_map)
-print(h)
-print_map(a_map)
-
-j = bf_search(ap_map)
-print(j)
-print_map(ap_map)
-
-j = bf_search(b_map)
-print(j)
-print_map(b_map)
-
-
-
-
-
-
-
-
-
-
-
-        
