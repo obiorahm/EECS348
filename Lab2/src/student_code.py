@@ -1,18 +1,16 @@
 import common
 def astar_search(map):
-	found = False
 	# PUT YOUR CODE HERE
 	# access the map using "map[y][x]"
 	# y between 0 and common.constants.MAP_HEIGHT-1
 	# x between 0 and common.constants.MAP_WIDTH-1
 	start_y, start_x, end_y, end_x = find_start_stop(map)
-	man_dist = []
-	manhattan_distance(map,end_y, end_x, man_dist)
+	end = [end_y, end_x]
 	frontier = []
 	path = []
 	path.append([start_y, start_x, -1, -1])
 	frontier.append([start_y, start_x, -1, -1, 0])
-	return astar(map, path, frontier, man_dist) and set_path(map, path, [end_y, end_x])
+	return astar(map, path, frontier, end) and set_path(map, path, end)
 
 def find_start_stop(map):
 	found_start = False
@@ -30,31 +28,18 @@ def find_start_stop(map):
 			if found_start and found_end:
 				return start_y, start_x, end_y, end_x
 
-def manhattan_distance(map, end_y, end_x, man_dist):
-	for i in range(0, len(map)):
-		man_dist.append([])
-		for j in range(0, len(map[0])):
-			if (map[i][j] == 0 or
-				map[i][j] == 2 or 
-				map[i][j] == 3):
-				x_dist = abs(end_x - j)
-				y_dist = abs(end_y - i)
-				man_dist[i].append(x_dist + y_dist)
-			else:
-				man_dist[i].append(-1)
 
-
-def astar(map, path, frontier, man_dist):
+def astar(map, path, frontier, end):
 	if(not frontier):
 		return False
-	curr_node = min_frontier(frontier, man_dist)
+	curr_node = min_frontier(frontier, end)
 	y = curr_node[0]
 	x = curr_node[1]
 	p_y = curr_node[2]
 	p_x = curr_node[3]
 	dist = curr_node[4]	
 	if (map[y][x] == 4 or map[y][x] == 1):
-		return astar(map, path, frontier, man_dist)
+		return astar(map, path, frontier, end)
 	if (map[y][x] == 3):
 		return True
 	if (map[y][x] == 0 or map[y][x] == 2):
@@ -64,7 +49,7 @@ def astar(map, path, frontier, man_dist):
 		frontier_append(map, path, frontier, y + 1, x, y, x, new_dist)
 		frontier_append(map, path, frontier, y, x - 1, y, x, new_dist)
 		frontier_append(map, path, frontier, y - 1, x, y, x, new_dist)
-		return astar(map, path, frontier, man_dist)
+		return astar(map, path, frontier, end)
 
 
 def frontier_append(map, path, frontier, y, x, p_y, p_x, new_dist):
@@ -76,15 +61,15 @@ def frontier_append(map, path, frontier, y, x, p_y, p_x, new_dist):
 		frontier.append([y, x, p_y, p_x, new_dist])
 
 
-def min_frontier(frontier, man_dist):
+def min_frontier(frontier, end):
 	j = -1
 	if frontier:
 		m_frontier = frontier[0]
 		j = 0
 		for i in range(0, len(frontier)):
 			c_frontier = frontier[i]
-			min_fn = m_frontier[4] + man_dist[m_frontier[0]][m_frontier[1]]
-			curr_fn = c_frontier[4] + man_dist[c_frontier[0]][c_frontier[1]]
+			min_fn = m_frontier[4] + abs(end[0] - m_frontier[0]) + abs(end[1] - m_frontier[1])
+			curr_fn = c_frontier[4] + abs(end[0] - c_frontier[0]) + abs(end[1] - c_frontier[1])
 			if(min_fn > curr_fn):
 				m_frontier = c_frontier
 				j = i
@@ -120,19 +105,7 @@ def set_path(map, path, end):
                             map[y][x] = 5
         return True
 
-b_map = [
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,1,0,1,1,1,1,1,1],
-        [0,2,1,0,1,0,0,0,0,0],
-        [1,1,1,0,1,0,1,1,1,0],
-        [0,0,0,0,1,0,1,0,1,0],
-        [0,0,1,0,1,0,1,0,1,0],
-        [0,0,1,0,0,0,1,0,1,0],
-        [0,0,1,1,1,1,1,0,1,0],
-        [0,0,0,0,0,0,0,0,1,0],
-        [0,0,1,1,1,1,1,1,1,0],
-        [0,0,1,0,0,0,1,0,3,1],
-        [1,0,0,0,1,0,1,0,0,1]]
+
 
 ap_map = [
         [2,0,0,0,0,0,0,0,0,0],
@@ -147,6 +120,19 @@ ap_map = [
         [1,0,1,1,1,1,1,1,1,0],
         [1,0,1,1,1,1,1,1,1,0],
         [1,0,0,0,0,0,0,0,0,3]]
+b_map = [
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,1,0,1,1,1,1,1,1],
+        [0,2,1,0,1,0,0,0,0,0],
+        [1,1,1,0,1,0,1,1,1,0],
+        [0,0,0,0,1,0,1,0,1,0],
+        [0,0,1,0,1,0,1,0,1,0],
+        [0,0,1,0,0,0,1,0,1,0],
+        [0,0,1,1,1,1,1,0,1,0],
+        [0,0,0,0,0,0,0,0,1,0],
+        [0,0,1,1,1,1,1,1,1,0],
+        [0,0,1,0,0,0,1,0,3,1],
+        [1,0,0,0,1,0,1,0,0,1]]
 
 a_map =[[0,0,0,0,0,0,0,0,0,0],
         [1,1,1,1,1,1,0,1,0,1],
@@ -247,13 +233,13 @@ print(j)
 print_map(b_map)
 '''
 
-h = astar_search(a_map)
-print(h)
-print_map(a_map)
-
 j = astar_search(ap_map)
 print(j)
 print_map(ap_map)
+
+h = astar_search(a_map)
+print(h)
+print_map(a_map)
 
 j = astar_search(b_map)
 print(j)
