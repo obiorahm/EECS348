@@ -91,7 +91,7 @@ def fowardchecking(sudoku, n, domain, unassigned_variables):
 	var = unassigned_variables[n]
 	for val in domain[n]:
 		sudoku[var[0]][var[1]] = val
-		curr_domain = copy.deepcopy(domain)													
+		curr_domain = copy_list(domain)													
 		curr_domain, x = update_domain(sudoku, var, curr_domain, unassigned_variables, n)
 		#print("update_domain ",x)
 		if x:
@@ -102,25 +102,31 @@ def fowardchecking(sudoku, n, domain, unassigned_variables):
 	return False
 
 def update_domain(sudoku, var, domain, unassigned_variables,n):
-	p = curr_domain = list(domain)	
+	p = list(domain)	
 	for j in range(n + 1, len (unassigned_variables)):
 		curr_var = unassigned_variables[j]
 		if((var[0] == curr_var[0]) or 
 			(var[1] == curr_var[1]) or 
 			(var[0] / 3 * 3 + var[1] / 3 == curr_var[0]/3 * 3 + curr_var[1])):
-			for k in domain[j]:
-				#print(k,"k")
-				#print(i, "i")
-				if not common.can_yx_be_z(sudoku, curr_var[0], curr_var[1], k):
-					p[j].remove(k)
-				if not p[j]:
-					return p, False
+				for k in domain[j]:
+					#print(k,"k")
+					#print(i, "i")
+					if not common.can_yx_be_z(sudoku, curr_var[0], curr_var[1], k):
+						p[j].remove(k)
+					if not p[j]:
+						return p, False
 	#print("domain")
 	#print_table(domain)				
 	return p, True
 
-def copy_list(list):
-	new_list 
+def copy_list(my_list):
+	new_list  = []
+	for l in my_list:
+		if (isinstance(l,list)):
+			new_list.append(copy_list(l))			
+		else:
+			new_list.append(l)
+	return new_list
 
 
 
