@@ -1,5 +1,6 @@
 import common
 import student_code
+import time
 
 class bcolors:
 	RED    = "\x1b[31m"
@@ -108,7 +109,8 @@ data3 = ("530070000"
 "000419005"
 "000080079")
 
-data4 = ("009000400"
+data4 = (
+"009000400"
 "600400020"
 "840031090"
 "008007041"
@@ -118,14 +120,27 @@ data4 = ("009000400"
 "020005004"
 "005000900")
 
+
 print ("Board 1")
+start_time = time.time()
 exp1 = run_experiment(data1, 35000, 4000, 2500)
+print("--- %s seconds ---" % (time.time() - start_time))
+
 print ("Board 2")
+start_time = time.time()
 exp2 = run_experiment(data2, 200000, 30000, 3500)
+print("--- %s seconds ---" % (time.time() - start_time))
+
 print ("Board 3")
+start_time = time.time()
 exp3 = run_experiment(data3, 40000, 4500, 300)
+print("--- %s seconds ---" % (time.time() - start_time))
+
 print ("Board 4")
+start_time = time.time()
 exp4 = run_experiment(data4, 6000, 800, 650)
+print("--- %s seconds ---" % (time.time() - start_time))
+
 
 all_passed = exp1 and exp2 and exp3 and exp4 
 

@@ -1,4 +1,5 @@
 import common
+import copy
 
 class variables:
 	counter=0
@@ -22,9 +23,9 @@ def sudoku_backtracking(sudoku):
 
 def print_table(sudoku):
 	for i in range (0, len(sudoku)):
-		for j in range (0, len(sudoku)):
+		for j in range (0, len(sudoku[i])):
 			print sudoku[i][j],
-		print'\n'
+		print '\n'
 
 def get_unassigned_variables(unassigned_variables, sudoku):
 	for i in range (0, len(sudoku)):
@@ -39,58 +40,18 @@ def backtracking(sudoku, unassigned_variables):
 	variables.counter += 1
 	if not unassigned_variables:
 		return True
-	a_variable = unassigned_variables[0]
+	var = unassigned_variables[0]
 	unassigned_variables.pop(0)	
 	for i in range( 0,len(order_domain_values)):
 		v = order_domain_values[i]
-		if (common.can_yx_be_z(sudoku, a_variable[0], a_variable[1],v)):
-			sudoku[a_variable[0]][a_variable[1]] = v
+		if (common.can_yx_be_z(sudoku, var[0], var[1],v)):
+			sudoku[var[0]][var[1]] = v
 			result = backtracking(sudoku, unassigned_variables)
 			if result:
 				return result
-			else: 
-				sudoku[a_variable[0]][a_variable[1]] = 0
-	unassigned_variables.insert(0, a_variable)
+			sudoku[var[0]][var[1]] = 0
+	unassigned_variables.insert(0, var)
 	return False
-
-def row_column_constraint(sudoku,val, var):
-	for i in range(0,9):
-		if sudoku[i][var[1]] == val:
-			return False
-		if sudoku[var[0]][i] == val:
-			return False
-	return True
-
-def cube_constraint(sudoku, val, a_variable):
-	if a_variable[1] >= 0 and a_variable[1] <= 2:
-		starty = 0
-		endy = 3
-	elif a_variable[1] >=3 and a_variable[1] <= 5:
-		starty = 3
-		endy = 6
-	else:
-		starty = 6
-		endy = 9
-
-	if a_variable[0] >= 0 and a_variable[0] <= 2:
-		startx = 0
-		endx = 3
-	elif a_variable[0] >=3 and a_variable[0] <= 5:
-		startx = 3
-		endx = 6
-	else:
-		startx = 6
-		endx = 9		
-	constraint = True 
-	for i in range (startx, endx):
-		for j in range(starty, endy):
-			constraint = constraint and (sudoku[i][j] != val)
-	return constraint
-
-
-
-
-
 
 
 
@@ -102,9 +63,66 @@ def sudoku_forwardchecking(sudoku):
 	# function must return the number of permutations performed
 	# the use of variables.counter to keep track of the worlds 
 	# explored is optional but recommended 
-	variables.counter=0
-	variables.counter+=1000000
+	variables.counter=0	
+	unassigned_variables = []	
+	domain = []
+	get_unassigned_variables(unassigned_variables, sudoku)
+	get_domain_unassigned_variables(unassigned_variables, domain, sudoku)
+	print fowardchecking(sudoku, 0, domain, unassigned_variables)
 	return variables.counter
+
+
+def get_domain_unassigned_variables(unassigned_variables, domain, sudoku):
+	for i in range(0, len(unassigned_variables)):
+		var = unassigned_variables[i]
+		domain.append([])
+		for j in order_domain_values:
+			if common.can_yx_be_z(sudoku, var[0], var[1], j):
+				domain[i].append(j)
+
+
+
+
+
+def fowardchecking(sudoku, n, domain, unassigned_variables):
+	variables.counter += 1
+	if n == len(unassigned_variables):
+		return True
+	var = unassigned_variables[n]
+	for val in domain[n]:
+		sudoku[var[0]][var[1]] = val
+		curr_domain = copy.deepcopy(domain)													
+		curr_domain, x = update_domain(sudoku, var, curr_domain, unassigned_variables, n)
+		#print("update_domain ",x)
+		if x:
+			result = fowardchecking(sudoku, n + 1, curr_domain, unassigned_variables)
+			if result: 
+				return result				
+		sudoku[var[0]][var[1]] = 0							
+	return False
+
+def update_domain(sudoku, var, domain, unassigned_variables,n):
+	p = curr_domain = list(domain)	
+	for j in range(n + 1, len (unassigned_variables)):
+		curr_var = unassigned_variables[j]
+		if((var[0] == curr_var[0]) or 
+			(var[1] == curr_var[1]) or 
+			(var[0] / 3 * 3 + var[1] / 3 == curr_var[0]/3 * 3 + curr_var[1])):
+			for k in domain[j]:
+				#print(k,"k")
+				#print(i, "i")
+				if not common.can_yx_be_z(sudoku, curr_var[0], curr_var[1], k):
+					p[j].remove(k)
+				if not p[j]:
+					return p, False
+	#print("domain")
+	#print_table(domain)				
+	return p, True
+
+def copy_list(list):
+	new_list 
+
+
 
 def sudoku_mrv(sudoku):
 	# PUT YOUR CODE HERE

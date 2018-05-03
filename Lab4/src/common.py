@@ -12,7 +12,7 @@ def print_sudoku(sudoku):
 		v=""
 		for x in range(9):
 			v+=str(sudoku[y][x]);
-		printf(v)
+		print(v)
 
 def can_yx_be_z(sudoku, y, x, z):
 	for i in range(9):
@@ -20,7 +20,7 @@ def can_yx_be_z(sudoku, y, x, z):
 			return False
 		if (sudoku[i][x]==z):
 			return False
-		if(sudoku[(y/3)*3+i/3][(x/3)*3+i%3]==z): 
+		if(sudoku[int ((y/3)*3+i/3)][int((x/3)*3+i%3)]==z): 
 			return False
 	return True
 		
