@@ -1,5 +1,4 @@
 import common
-import copy
 
 class variables:
 	counter=0
@@ -80,8 +79,13 @@ def get_domain_unassigned_variables(unassigned_variables, domain, sudoku):
 			if common.can_yx_be_z(sudoku, var[0], var[1], j):
 				domain[i].append(j)
 
-
-
+def get_domain_unassigned_variables_mrv(unassigned_variables, domain, sudoku):
+	for i in range(0, len(unassigned_variables)):
+		var = unassigned_variables[i]
+		unassigned_variables[i].append([])
+		for j in order_domain_values:
+			if common.can_yx_be_z(sudoku, var[0], var[1], j):
+				unassigned_variables[i].append(j)
 
 
 def fowardchecking(sudoku, n, domain, unassigned_variables):
@@ -92,32 +96,26 @@ def fowardchecking(sudoku, n, domain, unassigned_variables):
 	for val in domain[n]:
 		sudoku[var[0]][var[1]] = val
 		curr_domain = copy_list(domain)													
-		curr_domain, x = update_domain(sudoku, var, curr_domain, unassigned_variables, n)
-		#print("update_domain ",x)
-		if x:
+		satisfied = update_domain(sudoku, var, curr_domain, unassigned_variables, n)
+		if satisfied:
 			result = fowardchecking(sudoku, n + 1, curr_domain, unassigned_variables)
 			if result: 
 				return result				
 		sudoku[var[0]][var[1]] = 0							
 	return False
 
-def update_domain(sudoku, var, domain, unassigned_variables,n):
-	p = list(domain)	
+def update_domain(sudoku, var, domain, unassigned_variables, n):	
 	for j in range(n + 1, len (unassigned_variables)):
 		curr_var = unassigned_variables[j]
 		if((var[0] == curr_var[0]) or 
 			(var[1] == curr_var[1]) or 
 			(var[0] / 3 * 3 + var[1] / 3 == curr_var[0]/3 * 3 + curr_var[1])):
 				for k in domain[j]:
-					#print(k,"k")
-					#print(i, "i")
 					if not common.can_yx_be_z(sudoku, curr_var[0], curr_var[1], k):
-						p[j].remove(k)
-					if not p[j]:
-						return p, False
-	#print("domain")
-	#print_table(domain)				
-	return p, True
+						domain[j].remove(k)
+					if not domain[j]:
+						return  False				
+	return True
 
 def copy_list(my_list):
 	new_list  = []
@@ -138,6 +136,42 @@ def sudoku_mrv(sudoku):
 	# function must return the number of permutations performed
 	# the use of variables.counter to keep track of the worlds 
 	# explored is optional but recommended 
-	variables.counter=0
-	variables.counter+=1000000
+	variables.counter=0	
+	unassigned_variables = []	
+	domain = []
+	get_unassigned_variables(unassigned_variables, sudoku)
+	get_domain_unassigned_variables(unassigned_variables, domain, sudoku)
+	mrv(sudoku, domain,unassigned_variables)
 	return variables.counter
+
+
+def mrv(sudoku, domain, unassigned_variables):
+	variables.counter += 1
+	if not unassigned_variables:
+		return True 
+	id = get_mrv(domain)
+	var = unassigned_variables[id]
+	a_domain = domain[id]
+	domain.pop(id)
+	unassigned_variables.pop(id)
+	for val in a_domain:
+		if (common.can_yx_be_z(sudoku, var[0], var[1],val)):
+			sudoku[var[0]][var[1]] = val
+			result = mrv(sudoku, domain, unassigned_variables)
+			if result:
+				return result
+			sudoku[var[0]][var[1]] = 0
+	domain.insert(id, a_domain)
+	unassigned_variables.insert(id, var)
+	return False 
+
+def get_mrv(domain):
+	min_len  = len(domain[0])
+	id = 0
+	for i in range(0, len(domain)):
+		curr_len = len(domain[i])
+		if curr_len < min_len:
+			min_len = curr_len
+			id = i
+	return id 	
+
