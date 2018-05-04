@@ -79,13 +79,15 @@ def get_domain_unassigned_variables(unassigned_variables, domain, sudoku):
 			if common.can_yx_be_z(sudoku, var[0], var[1], j):
 				domain[i].append(j)
 
-def get_domain_unassigned_variables_mrv(unassigned_variables, domain, sudoku):
+def get_domain_unassigned_variables_mrv(unassigned_variables, sudoku):
 	for i in range(0, len(unassigned_variables)):
 		var = unassigned_variables[i]
-		unassigned_variables[i].append([])
+		unassigned_variables[i]
+		x = []
 		for j in order_domain_values:
 			if common.can_yx_be_z(sudoku, var[0], var[1], j):
-				unassigned_variables[i].append(j)
+				x.append(j)
+		unassigned_variables[i].append(x)
 
 
 def fowardchecking(sudoku, n, domain, unassigned_variables):
@@ -140,38 +142,79 @@ def sudoku_mrv(sudoku):
 	unassigned_variables = []	
 	domain = []
 	get_unassigned_variables(unassigned_variables, sudoku)
-	get_domain_unassigned_variables(unassigned_variables, domain, sudoku)
-	mrv(sudoku, domain,unassigned_variables)
+	#print(unassigned_variables)
+	#get_domain_unassigned_variables(unassigned_variables, domain, sudoku)
+	
+	get_domain_unassigned_variables_mrv(unassigned_variables,  sudoku)
+	#new_list = []
+	#new_list = sort_domain_values_mrv(unassigned_variables)
+	#print(new_list)
+
+	#mrv(sudoku, new_list)
+	mrv(sudoku,unassigned_variables)
 	return variables.counter
 
 
-def mrv(sudoku, domain, unassigned_variables):
+def sort_domain_values_mrv(unassigned_variables):
+	new_list = []
+	for  i in range(1, 9):
+		for j in range(0, len(unassigned_variables)):
+			if (len(unassigned_variables[j][2]) == i):
+				new_list.append(copy_list(unassigned_variables[j]))
+	return new_list
+
+
+
+def mrv(sudoku, unassigned_variables):
 	variables.counter += 1
 	if not unassigned_variables:
 		return True 
-	id = get_mrv(domain)
-	var = unassigned_variables[id]
-	a_domain = domain[id]
-	domain.pop(id)
+
+	id = get_mrv(sudoku, unassigned_variables)
+	var = copy_list(unassigned_variables[id])
 	unassigned_variables.pop(id)
-	for val in a_domain:
+	for val in var[2]:
 		if (common.can_yx_be_z(sudoku, var[0], var[1],val)):
 			sudoku[var[0]][var[1]] = val
-			result = mrv(sudoku, domain, unassigned_variables)
+			result = mrv(sudoku, unassigned_variables)
 			if result:
 				return result
 			sudoku[var[0]][var[1]] = 0
-	domain.insert(id, a_domain)
-	unassigned_variables.insert(id, var)
+	unassigned_variables.insert(0, var)
 	return False 
 
-def get_mrv(domain):
-	min_len  = len(domain[0])
+
+
+def get_mrv(sudoku, unassigned_variables):
+	get_domain_unassigned_variables_mrv(unassigned_variables, sudoku)	
+	#print(len(unassigned_variables))
+	update_domain_mrv(unassigned_variables, sudoku)
+	for i in range(9):
+		for j in range(len(unassigned_variables)):
+			if (len(unassigned_variables[j][2]) == i):
+				return j
+	return 0
+
+def update_domain_mrv(unassigned_variables, sudoku):
+	for i in range(0, len(unassigned_variables)):
+		var = unassigned_variables[i]
+		unassigned_variables[i]
+		x = []
+		for j in order_domain_values:
+			if common.can_yx_be_z(sudoku, var[0], var[1], j):
+				x.append(j)
+		unassigned_variables[i][2] = x	
+
+
+'''
+def get_mrv(unassigned_variables):
 	id = 0
-	for i in range(0, len(domain)):
-		curr_len = len(domain[i])
+	min_len = len(unassigned_variables[0][2])
+	for i in range(0, len(unassigned_variables)):
+		curr_len = len(unassigned_variables[i][2])
 		if curr_len < min_len:
 			min_len = curr_len
 			id = i
-	return id 	
-
+			
+	return id
+'''	
