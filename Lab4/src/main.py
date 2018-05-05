@@ -77,7 +77,6 @@ def run_experiment(data, btlimit, fclimit, mrvlimit):
 
 	return result
 
-'''
 
 data1 = ("900670000"
 "006800470"
@@ -88,17 +87,6 @@ data1 = ("900670000"
 "300060008"
 "068005200"
 "000082006")
-'''
-
-data1 = ("000000000"
-"000000000"
-"000000000"
-"000000000"
-"000000000"
-"000000000"
-"000000008"
-"000000000"
-"000000000")
 
 data2 = ("006100050"
 "200605008"
@@ -132,6 +120,23 @@ data4 = (
 "005000900")
 
 
+data5 = ("000000000"
+"000000000"
+"000000000"
+"000000000"
+"000000000"
+"000000000"
+"000000008"
+"000000000"
+"000000000")
+
+
+
+print ("Board 1")
+start_time = time.time()
+exp1 = run_experiment(data1, 35000, 4000, 2500)
+print("--- %s seconds ---" % (time.time() - start_time))
+
 print ("Board 2")
 start_time = time.time()
 exp2 = run_experiment(data2, 200000, 30000, 3500)
@@ -147,9 +152,9 @@ start_time = time.time()
 exp4 = run_experiment(data4, 6000, 800, 650)
 print("--- %s seconds ---" % (time.time() - start_time))
 
-print ("Board 1")
+print ("Board 5")
 start_time = time.time()
-exp1 = run_experiment(data1, 35000, 4000, 2500)
+exp5 = run_experiment(data5, 6000, 800, 650)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 
