@@ -276,10 +276,9 @@ values_gold6 = [  -26070.68,-23496.14,-20933.07,-21617.33,-20863.11,-18937.84,
 							 -16768.20,-12302.80,-7951.10,-7223.90,-252.56,10000.00,
 							 	-14270.99,-8064.60,-500.00,-7271.94,-5331.16,670.86]
 
+
 print("Map6");
-
-
-all_passed = run_experiment(data6, -16768.19, p_gold6, values_gold6, 1, 1, 0, .1) and all_passed
+all_passed = run_experiment(data6, -16768.19, p_gold6, values_gold6, 10000, 5000, 500, .1) and all_passed
 print
 
 if all_passed:

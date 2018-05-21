@@ -14,10 +14,8 @@ def sudoku_backtracking(sudoku):
 	variables.counter=0	
 	unassigned_variables = []
 	get_unassigned_variables(unassigned_variables, sudoku)
-	print (backtracking(sudoku,unassigned_variables))
-	#print_table(sudoku)
+	backtracking(sudoku,unassigned_variables)
 
-	#variables.counter+=1000000
 	return variables.counter
 
 def print_table(sudoku):
@@ -34,6 +32,7 @@ def get_unassigned_variables(unassigned_variables, sudoku):
 				#print (i,j)
 
 order_domain_values = [9,8,7,6,5,4,3,2,1]
+#order_domain_values = [1,2,3,4,5,6,7,8,9]
 
 def backtracking(sudoku, unassigned_variables):
 	variables.counter += 1
@@ -53,7 +52,6 @@ def backtracking(sudoku, unassigned_variables):
 	return False
 
 
-
 def sudoku_forwardchecking(sudoku):
 	# PUT YOUR CODE HERE
 	# access the sudoku using "sudoku[y][x]"
@@ -67,22 +65,13 @@ def sudoku_forwardchecking(sudoku):
 	unassigned_variables = []	
 	domain = []
 	get_unassigned_variables(unassigned_variables, sudoku)
-	get_domain_unassigned_variables_mrv(unassigned_variables, sudoku)
-	#get_domain_unassigned_variables(unassigned_variables, domain, sudoku)
-	#print fowardchecking(sudoku, 0, domain, unassigned_variables)
-	print fowardchecking(sudoku, unassigned_variables)
+	get_domain_unassigned_variables(unassigned_variables, sudoku)
+	fowardchecking(sudoku, unassigned_variables)
 	return variables.counter
 
 
-def get_domain_unassigned_variables(unassigned_variables, domain, sudoku):
-	for i in range(0, len(unassigned_variables)):
-		var = unassigned_variables[i]
-		domain.append([])
-		for j in order_domain_values:
-			if common.can_yx_be_z(sudoku, var[0], var[1], j):
-				domain[i].append(j)
 
-def get_domain_unassigned_variables_mrv(unassigned_variables, sudoku):
+def get_domain_unassigned_variables(unassigned_variables, sudoku):
 	for i in range(0, len(unassigned_variables)):
 		var = unassigned_variables[i]
 		x = []
@@ -92,21 +81,37 @@ def get_domain_unassigned_variables_mrv(unassigned_variables, sudoku):
 		unassigned_variables[i].append(x)
 
 
-def fowardchecking(sudoku, n, domain, unassigned_variables):
+
+def fowardchecking(sudoku, unassigned_variables):
 	variables.counter += 1
-	if n == len(unassigned_variables):
+	if not unassigned_variables:
 		return True
-	var = unassigned_variables[n]
-	for val in domain[n]:
+	var = copy_list(unassigned_variables[0])
+	unassigned_variables.pop(0)
+	for val in var[2]:
 		sudoku[var[0]][var[1]] = val
-		curr_domain = copy_list(domain)													
-		satisfied = update_domain(sudoku, var, curr_domain, unassigned_variables, n)
-		if satisfied:
-			result = fowardchecking(sudoku, n + 1, curr_domain, unassigned_variables)
-			if result: 
-				return result				
-		sudoku[var[0]][var[1]] = 0							
+		new_unassigned_variables = copy_list(unassigned_variables)		
+		if update_domain(sudoku, var, new_unassigned_variables):		
+			result = fowardchecking(sudoku, new_unassigned_variables)
+			if result:
+				return result
+		sudoku[var[0]][var[1]] = 0
+	unassigned_variables.insert(0, var)
 	return False
+
+
+def update_domain(sudoku, var, unassigned_variables):
+	for j in range(len(unassigned_variables)):
+		curr_var = unassigned_variables[j]
+		if((var[0] == curr_var[0]) or 
+			(var[1] == curr_var[1]) or 
+			(var[0] / 3 * 3 + var[1] / 3 == curr_var[0]/3 * 3 + curr_var[1])):
+			for k in curr_var[2]:
+				if not common.can_yx_be_z(sudoku, curr_var[0], curr_var[1], k):
+					curr_var[2].remove(k)
+				if not curr_var[2]:
+					return False
+	return True	
 
 
 
@@ -133,7 +138,7 @@ def sudoku_mrv(sudoku):
 	unassigned_variables = []	
 	domain = []
 	get_unassigned_variables(unassigned_variables, sudoku)
-	get_domain_unassigned_variables_mrv(unassigned_variables,  sudoku)
+	get_domain_unassigned_variables(unassigned_variables,  sudoku)
 	mrv(sudoku,unassigned_variables)
 	return variables.counter
 
@@ -142,7 +147,6 @@ def mrv(sudoku, unassigned_variables):
 	variables.counter += 1
 	if not unassigned_variables:
 		return True 
-
 	id = get_mrv(sudoku, unassigned_variables)
 	var = copy_list(unassigned_variables[id])
 	unassigned_variables.pop(id)
@@ -176,64 +180,6 @@ def update_domain_mrv(unassigned_variables, sudoku):
 				x.append(j)
 		unassigned_variables[i][2] = x	
 
-'''		
-def update_domain(sudoku, var, domain, unassigned_variables, n):	
-	for j in range(n + 1, len (unassigned_variables)):
-		curr_var = unassigned_variables[j]
-		if((var[0] == curr_var[0]) or 
-			(var[1] == curr_var[1]) or 
-			(var[0] / 3 * 3 + var[1] / 3 == curr_var[0]/3 * 3 + curr_var[1])):
-				for k in domain[j]:
-					if not common.can_yx_be_z(sudoku, curr_var[0], curr_var[1], k):
-						domain[j].remove(k)
-					if not domain[j]:
-						return  False				
-	return True
 
-def fowardchecking(sudoku, n, domain, unassigned_variables):
-	variables.counter += 1
-	if n == len(unassigned_variables):
-		return True
-	var = unassigned_variables[n]
-	for val in domain[n]:
-		sudoku[var[0]][var[1]] = val
-		curr_domain = copy_list(domain)													
-		satisfied = update_domain(sudoku, var, curr_domain, unassigned_variables, n)
-		if satisfied:
-			result = fowardchecking(sudoku, n + 1, curr_domain, unassigned_variables)
-			if result: 
-				return result				
-		sudoku[var[0]][var[1]] = 0							
-	return False
-'''
-def fowardchecking(sudoku, unassigned_variables):
-	variables.counter += 1
-	if not unassigned_variables:
-		return True
-	var = copy_list(unassigned_variables[0])
-	unassigned_variables.pop(0)
-	for val in var[2]:
-		sudoku[var[0]][var[1]] = val
-		new_unassigned_variables = copy_list(unassigned_variables)		
-		if update_domain(sudoku, var, new_unassigned_variables):		
-			result = fowardchecking(sudoku, new_unassigned_variables)
-			if result:
-				return result
-		sudoku[var[0]][var[1]] = 0
-	unassigned_variables.insert(0, var)
-	return False
-
-def update_domain(sudoku, var, unassigned_variables):
-	for j in range(len(unassigned_variables)):
-		curr_var = unassigned_variables[j]
-		if((var[0] == curr_var[0]) or 
-			(var[1] == curr_var[1]) or 
-			(var[0] / 3 * 3 + var[1] / 3 == curr_var[0]/3 * 3 + curr_var[1])):
-			for k in curr_var[2]:
-				if not common.can_yx_be_z(sudoku, curr_var[0], curr_var[1], k):
-					curr_var[2].remove(k)
-				if not curr_var[2]:
-					return False
-	return True
 
 

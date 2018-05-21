@@ -37,7 +37,7 @@ def ab_max_value(board, alpha, beta):
         if ((result == common.constants.X) or 
             (result == common.constants.O)):
                 return result
-        elif tie(board, len(board) - 1):
+        elif tie(board):
                 return common.constants.NONE
         else:
                 for i in range(0, len(board)):
@@ -56,7 +56,7 @@ def ab_min_value(board, alpha, beta):
         if ((result == common.constants.X) or
             (result == common.constants.O)):
                 return result
-        elif tie(board, len(board) - 1):
+        elif tie(board):
                  return common.constants.NONE
         else:
                 for i in range(0, len(board)):
@@ -77,7 +77,7 @@ def max_value(board):
         if ((result == common.constants.X) or 
             (result == common.constants.O)):
                 return result
-        elif tie(board,len(board) - 1):
+        elif tie(board):
                 return common.constants.NONE
         else:
                 for i in range(0, len(board)):
@@ -93,7 +93,7 @@ def min_value(board):
         if ((result == common.constants.X) or 
             (result == common.constants.O)):
                 return result
-        elif tie(board, len(board) - 1):
+        elif tie(board):
                 return common.constants.NONE
         else:
                 for i in range (0, len(board)):
@@ -104,35 +104,27 @@ def min_value(board):
                 return v
 
 
-def maximum(v, new_v):
-        if v == 1:
-                return v
-        if new_v == 1:
-                return new_v
-        if v == 0:
-                return v
-        if new_v == 0:
-                return new_v
+data_set = { common.constants.O : 0, common.constants.NONE: 1, common.constants.X:2}
+
+def maximum (v, new_v):
+    if (data_set[v] > data_set[new_v]):
         return v
+    else:
+        return new_v
 
 def minimum(v, new_v):
-        if v == 2:
-                return v
-        if new_v == 2:
-                return new_v
-        if v == 0:
-                return v
-        if new_v == 0:
-                return new_v
+    if (data_set[v] < data_set[new_v]):
         return v
+    else:
+        return new_v    
 
-def tie(board,n):
-        if n == 0:
-                return board[n] != 0
-        return (board[n] != 0) and tie(board, n - 1)
-
-x = minmax_tictactoe([1,2,0,0,1,0,0,0,0],1)
-print(x)
-x = abprun_tictactoe([1,2,0,0,1,0,0,0,0], 2)
-print(x)
-
+def tie(board):
+    return ((board[0] != 0) and 
+        (board[1] != 0) and 
+        (board[2] != 0) and
+        (board[3] != 0) and 
+        (board[4] != 0) and 
+        (board[5] != 0) and
+        (board[6] != 0) and 
+        (board[7] != 0) and
+        (board[8] != 0))

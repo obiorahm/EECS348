@@ -28,8 +28,12 @@ def check_result(sudoku, show):
 	
 def run_experiment(data, btlimit, fclimit, mrvlimit):
 	result=True
-    
+
+	start_time = time.time()		    
 	sudoku = common.init_sudoku();
+
+
+	
 	common.set_sudoku(sudoku, data);
 	bt1 = student_code.sudoku_backtracking(sudoku);
 	if ( not check_result(sudoku,False)):
@@ -44,7 +48,9 @@ def run_experiment(data, btlimit, fclimit, mrvlimit):
 		result=False
 	else:
 		print("Backtracking count: "+str(bt1) +"("+bcolors.GREEN+"SUCCESS"+bcolors.NORMAL+")")
+	print("--- %s seconds ---" % (time.time() - start_time))
 
+	start_time = time.time()		
 	common.set_sudoku(sudoku, data)
 	fc1 = student_code.sudoku_forwardchecking(sudoku)
 	if (not check_result(sudoku,False)):
@@ -59,7 +65,9 @@ def run_experiment(data, btlimit, fclimit, mrvlimit):
 		result=False;
 	else:
 		print("Forwardchecking count: "+str(fc1) +"("+bcolors.GREEN+"SUCCESS"+bcolors.NORMAL+")")
+	print("--- %s seconds ---" % (time.time() - start_time))
 
+	start_time = time.time()		
 	common.set_sudoku(sudoku, data);
 	mrv1 = student_code.sudoku_mrv(sudoku);
 	if (not check_result(sudoku,False)):
@@ -68,14 +76,19 @@ def run_experiment(data, btlimit, fclimit, mrvlimit):
 		result=False
 	else:
 		print("MRV results: "+bcolors.GREEN+"SUCCESS"+bcolors.NORMAL)
-		
+
 	if (mrv1>mrvlimit):
 		print("MRV count: "+str(mrv1) +"("+bcolors.RED+"FAIL"+bcolors.NORMAL+")")
 		result=False;
 	else:
 		print("MRV count: "+str(mrv1) +"("+bcolors.GREEN+"SUCCESS"+bcolors.NORMAL+")")
+	print("--- %s seconds ---" % (time.time() - start_time))
 
-	return result
+
+
+	return result	
+
+
 
 
 data1 = ("900670000"
@@ -126,39 +139,65 @@ data5 = ("000000000"
 "000000000"
 "000000000"
 "000000000"
-"000000008"
+"000000000"
 "000000000"
 "000000000")
 
+data6 = ("000000000"
+"050050050"
+"000000000"
+"000000000"
+"050050050"
+"000000000"
+"000000000"
+"050050050"
+"000000000")
 
 
 print ("Board 1")
-start_time = time.time()
 exp1 = run_experiment(data1, 35000, 4000, 2500)
-print("--- %s seconds ---" % (time.time() - start_time))
 
 print ("Board 2")
-start_time = time.time()
 exp2 = run_experiment(data2, 200000, 30000, 3500)
-print("--- %s seconds ---" % (time.time() - start_time))
 
 print ("Board 3")
-start_time = time.time()
 exp3 = run_experiment(data3, 40000, 4500, 300)
-print("--- %s seconds ---" % (time.time() - start_time))
 
 print ("Board 4")
-start_time = time.time()
 exp4 = run_experiment(data4, 6000, 800, 650)
-print("--- %s seconds ---" % (time.time() - start_time))
+
 
 print ("Board 5")
-start_time = time.time()
 exp5 = run_experiment(data5, 6000, 800, 650)
-print("--- %s seconds ---" % (time.time() - start_time))
 
 
-all_passed = exp1 and exp2 and exp3 and exp4 
+#print ("Board 6")
+
+#exp6 = run_experiment(data6, 6000, 800, 650)
+
+
+all_passed = exp1 and exp2 and exp3 and exp4 and exp5 
+'''
+f=open("sudoku.txt", "r")
+sudoku = ()
+row = ""
+if f.mode == 'r':
+	f1 = f.readlines()
+	for line in f1:
+		start = -1
+		for char in line:
+			start += 1
+			if char == ".":
+				row +="0"
+			else:
+				row += char
+		new_sudoku = common.init_sudoku();
+		common.set_sudoku( new_sudoku, row);
+		common.print_sudoku(new_sudoku)		
+		run_experiment(row, 6000, 800, 650)	
+		row = ""		
+'''	
+#common.print_sudoku(new_sudoku)
 
 
 if all_passed:

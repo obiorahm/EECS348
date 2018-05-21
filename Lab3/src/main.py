@@ -1,5 +1,6 @@
 import common
 import student_code
+import time
 
 class bcolors:
 	RED    = "\x1b[31m"
@@ -53,56 +54,56 @@ def run_experiment(board, next, win, gmme, gabe):
 
 
 board1 = (
-"O X"
-"XXO"
-"OX ")
-next1=common.constants.X
-win1=common.constants.X
+"X O"
+"OOX"
+"XO ")
+next1=common.constants.O
+win1=common.constants.O
 mme1=4
 abe1=2
 
 board2 = (
-" OX"
+" XO"
 "   "
 "   ")
-next2=common.constants.X
-win2=common.constants.X
+next2=common.constants.O
+win2=common.constants.O
 mme2=8232
 abe2=1250
 
 board3 = (
-"OXX"
-"OO "
+"XOO"
+"XX "
 "   ")
-next3=common.constants.X
-win3=common.constants.O
+next3=common.constants.O
+win3=common.constants.X
 mme3=27
 abe3=9
 
 board4 = (
-"O  "
-" X "
+"X  "
+" O "
 "   ")
-next4=common.constants.X
+next4=common.constants.O
 win4=common.constants.NONE
 mme4=6812
 abe4=1535
 
 board5 = (
-"XXO"
-"OXX"
-"OXO")
-next5=common.constants.X
-win5=common.constants.X
+"OOX"
+"XOO"
+"XOX")
+next5=common.constants.O
+win5=common.constants.O
 mme5=1
 abe5=1
 
 board6 = (
-"OXX"
-"XO "
-"XOO")
-next6=common.constants.X
-win6=common.constants.O
+"XOO"
+"OX "
+"0XX")
+next6=common.constants.O
+win6=common.constants.X
 mme6=1
 abe6=1
 
@@ -111,7 +112,7 @@ board7 = (
 "   "
 "   "
 "   ")
-next7=common.constants.X
+next7=common.constants.O
 win7=common.constants.NONE
 mme7=549946
 abe7=94978
@@ -120,20 +121,33 @@ all_passed = all_passed
 
 
 print ("Board 1")
+start_time = time.time()
 exp1 = run_experiment(board1,next1,win1,mme1,abe1)
+print("--- %s seconds ---" % (time.time() - start_time))
 print ("Board 2")
+start_time = time.time()
 exp2 = run_experiment(board2,next2,win2,mme2,abe2)
+print("--- %s seconds ---" % (time.time() - start_time))
 print ("Board 3")
+start_time = time.time()
 exp3 = run_experiment(board3,next3,win3,mme3,abe3)
+print("--- %s seconds ---" % (time.time() - start_time))
 print ("Board 4")
+start_time = time.time()
 exp4 = run_experiment(board4,next4,win4,mme4,abe4)
+print("--- %s seconds ---" % (time.time() - start_time))
 print ("Board 5")
+start_time = time.time()
 exp5 = run_experiment(board5,next5,win5,mme5,abe5)
+print("--- %s seconds ---" % (time.time() - start_time))
 print ("Board 6")
+start_time = time.time()
 exp6 = run_experiment(board6,next6,win6,mme6,abe6)
-
+print("--- %s seconds ---" % (time.time() - start_time))
 print ("Board 7")
+start_time = time.time()
 exp7 = run_experiment(board7,next7,win7,mme7,abe7)
+print("--- %s seconds ---" % (time.time() - start_time))
 
 all_passed = exp1 and exp2 and exp3 and exp4 and exp5 and exp6 and exp7
 
