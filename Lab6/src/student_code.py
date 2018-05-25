@@ -1,5 +1,5 @@
 import common
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 def part_one_classifier(data_train,data_test):
 	# PUT YOUR CODE HERE
@@ -14,9 +14,12 @@ def part_one_classifier(data_train,data_test):
 	#for f in data_train:
 	#	print (f)
 	#print (len(data_train))
-	binary_classifier(data_train, data_test)
+	n = 2
+	w = train(data_train, data_test, n, 200, 0.05)	
+	#binary_classifier(data_train, data_test)
+	test(data_test,w, n)
 	return
-
+'''
 def binary_classifier(data_train, data_test):
 	w = [0.0 for x in range(3)]
 
@@ -49,48 +52,50 @@ def binary_classifier(data_train, data_test):
 				index.append(v)
 		t = t + i
 
-		#print f[0], f[1], w[0], w[1], y, y_star, classes[int(y_star)]
 
-	print (w[0])
-	print (w[1])
-	print (w[2])
+	print (error)
 	plt.plot(index, accuracy)
 	plt.show()	
 
 	for f in data_test:
 		y = (w[0] * f[0]) + (w[1] * f[1]) + w[2]
 		if y >= 0:
-			f[2] = 1.0
-			#print (y)			
+			f[2] = 1.0		
 		else:
 			f[2] = 0.0	
-			#print (y)
+'''			
 
+def train(data_train, data_test, n, epoch, acc):
+	# prediction class array
+	y = [0.0 for x in range(n)]
 
-def part_two_classifier(data_train,data_test):
-	# PUT YOUR CODE HERE
-	# Access the training data using "data_train[i][j]"
-	# Training data contains 3 cols per row: X in 
-	# index 0, Y in index 1 and Class in index 2
-	# Access the test data using "data_test[i][j]"
-	# Test data contains 2 cols per row: X in 
-	# index 0 and Y in index 1, and a blank space in index 2 
-	# to be filled with class
-	# The class value could be a 0 or a 8
-	y = [0.0 for x in range(9)]
-	w = [[0.0 for x in range(3)] for x in range(9)]
+	# weights array
+	w = [[0.0 for x in range(len(data_train[0]))] for x in range(n)]
+
+	# feature bias all set to 1
 	fb = [1.0 for x in range(len(data_train))]
 
-	for b in w:
-		b[2] = 0.0
-	accuracy = []
-	acc_index = []
-	v = 0
-	error = 1.0	
-	t = 1
-	count = 0
-	while (error > 0.05 and count < 3000):	
-		count += 1
+	# accuracy array of n_error/ total_trained
+	l_accuracy = []
+
+	# acc_index array of n_errors
+	l_n_errors = []
+
+	#v = 0 no of errors
+	n_errors = 0.0
+
+	# error = 1.0 fraction of errors in trained  
+	ave_error = 1.0
+
+	#t = 1 total number trained 
+	total_trained = 1.0
+
+	# count = 0 epoch_count
+	epoch_count = 0
+
+
+	while (ave_error > acc and epoch_count < epoch):	
+		epoch_count += 1
 		for j,f in enumerate(data_train):
 			for i in range(len(y)):
 				y[i] = w[i][0] * f[0] +  w[i][1] * f[1] + w[i][2]
@@ -106,26 +111,47 @@ def part_two_classifier(data_train,data_test):
 				w[new_id][0] = w[new_id][0] + f[0]
 				w[new_id][1] = w[new_id][1] + f[1]
 				w[new_id][2] = w[new_id][2] + fb[j]
-				v = v + 1
-				error = v/ (t + j)
+				n_errors += 1
+				ave_error = n_errors/ (total_trained + j)
 				#print (v, t + i )
-				accuracy.append(error)
-				acc_index.append(v)
-		t = t + j				
-		#print w, index, y_star
-		#print f[0], f[1], w[index][0], w[index][1], index, y_star  
+				l_accuracy.append(ave_error)
+				l_n_errors.append(n_errors)
+		total_trained += j				
 
-	print (accuracy[len(accuracy) - 1])
-	print (acc_index[len(acc_index) - 1])
-	print (w[2])
-	plt.plot(acc_index, accuracy)
-	plt.show()	
+	#print_accuracy(l_accuracy, l_n_errors)
+	return w	
 
+def test(data_test, w, n):
+	y = [0 for x in range(n)]
 	for f in data_test:
 		for i in range(len(y)):
 			y[i] = w[i][0] * f[0] +  w[i][1] * f[1] + w[i][2]
 		max_y = max(y)
 		index = y.index(max_y)
 		f[2] = float(index)
-	return
+	return	
 
+
+def part_two_classifier(data_train,data_test):
+	# PUT YOUR CODE HERE
+	# Access the training data using "data_train[i][j]"
+	# Training data contains 3 cols per row: X in 
+	# index 0, Y in index 1 and Class in index 2
+	# Access the test data using "data_test[i][j]"
+	# Test data contains 2 cols per row: X in 
+	# index 0 and Y in index 1, and a blank space in index 2 
+	# to be filled with class
+	# The class value could be a 0 or a 8
+	n = 9
+	w = train(data_train, data_test, n, 3000, 0.05)
+	test(data_test, w, n)
+	return
+'''
+def print_accuracy(l_accuracy, l_n_errors):
+	print (l_accuracy[len(l_accuracy) - 1])
+	print (l_n_errors[len(l_n_errors) - 1])
+	plt.plot(l_n_errors, l_accuracy)
+	plt.show()		
+
+
+'''
