@@ -1,6 +1,7 @@
 import struct, array
 import common
 import student_code
+import time
 
 class bcolors:
 	RED    = "\x1b[31m"
@@ -31,6 +32,7 @@ def similar(v, c, m):
 def check_slopeintercept ( title, filename, m_gold, b_gold):
 	success=True
 	image=readBmp(filename)
+	start_time = time.time()
 	line = student_code.detect_slope_intercept(image)
 	print(title + " slope intercept results:")
 	if (similar (line.m,m_gold,.1)):
@@ -45,11 +47,15 @@ def check_slopeintercept ( title, filename, m_gold, b_gold):
 		print("b: " + str(line.b) + " (" + bcolors.RED + "FAIL" + bcolors.NORMAL + ") expected "+ str(b_gold))
 		success = False
 	print 
+	print("--- %s seconds ---" % (time.time() - start_time))
+
 	return success
 
 def check_normal ( title, filename, t_gold, r_gold):
 	success=True
 	image=readBmp(filename)
+	start_time = time.time()
+
 	line = student_code.detect_normal(image)
 	print(title + " normal intercept results:")
 	if (similar (line.theta,t_gold,.1)):
@@ -64,11 +70,14 @@ def check_normal ( title, filename, t_gold, r_gold):
 		print("r: " + str(line.r) + " (" + bcolors.RED + "FAIL" + bcolors.NORMAL + ") expected "+ str(r_gold))
 		success = False
 	print 
+	print("--- %s seconds ---" % (time.time() - start_time))
+
 	return success
 
 def check_circles ( title, filename, c_gold):
 	success=True
 	image=readBmp(filename)
+	start_time = time.time()
 	circles = student_code.detect_circles(image)
 	print(title + " normal intercept results:")
 	if (circles==c_gold):
@@ -77,6 +86,8 @@ def check_circles ( title, filename, c_gold):
 		print("detected: " + str(circles) + " (" + bcolors.RED + "FAIL" + bcolors.NORMAL + ") expected "+ str(c_gold))
 		success = False
 	print 
+	print("--- %s seconds ---" % (time.time() - start_time))
+
 	return success
 
 

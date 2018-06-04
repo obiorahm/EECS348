@@ -20,19 +20,8 @@ def detect_slope_intercept(image):
 	line=common.Line()
 	line.m=0
 	line.b=0
-	#print ("Hey there, I'm using whatsApp")
-	#print(image[0][:][100])
-	#print(image[1][:][100])
-	#print(image[2][:][100])
 
-
-
-	#hough = common.init_space(20, 2000)
-
-	#print(len(image))
-	#print(len(image[0]))	
-
-	bin = [[[0.0 for x in range(3)] for x in range(2000)] for x in range(2000)]	
+	hough_space = [[[0.0 for x in range(3)] for x in range(2000)] for x in range(2000)]	
 	#print("done")
 
 	max_x = 0
@@ -44,24 +33,23 @@ def detect_slope_intercept(image):
 			if ((image[2][i][j] == 0) and 
 				(image[0][i][j] == image[1][i][j]) and
 				(image[1][i][j] == image[2][i][j])):
-				m= -10.0
+				m = -10.0
 				while (m < 10.0):
 					b = (m * -j) + i
 					if (b >= -1000.0 and b < 1000.0):
-						# select bin
-						y = int((b + 1000.0))
-						x = int((m + 10.0) * 100.0)
-
-						bin[y][x][0] = bin[y][x][0] + b
-						bin[y][x][1] = bin[y][x][1] + m
-						bin[y][x][2] = bin[y][x][2] + 1.0	
-						if (bin[y][x][2] > bin[max_y][max_x][2]):
+						# select bin[y][x]
+						y = int((b + 1000))
+						x = int((m + 10) * 100)
+						hough_space[y][x][0] = hough_space[y][x][0] + b
+						hough_space[y][x][1] = hough_space[y][x][1] + m
+						hough_space[y][x][2] = hough_space[y][x][2] + 1	
+						if (hough_space[y][x][2] > hough_space[max_y][max_x][2]):
 							max_y = y
 							max_x = x												
 					m += incr
-
-	line.b = bin[max_y][max_x][0]/bin[max_y][max_x][2]
-	line.m = bin[max_y][max_x][1]/bin[max_y][max_x][2]	
+	max_vote = hough_space[max_y][max_x]
+	line.b = max_vote[0]/max_vote[2]
+	line.m = max_vote[1]/max_vote[2]	
 
 	return line					
 
@@ -83,6 +71,8 @@ def detect_normal(image):
 	max_y = 0	
 
 	H = [[[0.0 for x in range(3)] for x in range(1800)] for x in range(1800)]
+
+
 	pi = 3.14159265
 	incr = pi/1800.0
 
@@ -128,10 +118,11 @@ def detect_circles(image):
 
 	hough_space = [[0.0 for x in range(len(image[0]))] for x in range(len(image[0][0]))]
 
-	GRADIENT = 2
+
 	X = 0
 	Y = 1
 	RADIUS = 30.0
+	GRADIENT = 2
 	RADIUS_SQUARED = RADIUS * RADIUS
 	MAX_PIXEL_VALUE = 255.0
 
@@ -206,10 +197,16 @@ def detect_circles(image):
 				#print (hough_space[i][j])
 				count_circles += 1
 
-	c = [0.001 for x in range(len(p))]
+	#show_image(image)
+	#x = input("enter a number")
+	#show_image(s)
+	#y = input("enter another number")
+	#plot_graph(p,q)
+	#c = [0.001 for x in range(len(p))]
 	#y = np.dstack(s)
 	#print("shape",y.shape)
-	#plt.imshow(y)
+	#plt.imshow(image)
+	#plt.imshow(new_image)
 	#plt.scatter(p, q, s=c)	
 	#plt.show()						
 
@@ -228,7 +225,15 @@ def detect_circles(image):
 	'''	
 	return count_circles
 
+def show_image(s):
+	y = np.dstack(s)
+	plt.imshow(y)
+	plt.show()
 
+def plot_graph(p,q):
+	c = [0.001 for x in range(len(p))]	
+	plt.scatter(p, q, s=c)	
+	plt.show()			
 
 def sobel(i, j, image, new_image, orientation):
 	sobel = [[
@@ -279,9 +284,5 @@ def set_max(max_gradient, curr_gradient):
 		return curr_gradient
 	return max_gradient	
 
-
-def checkij(image, i, j):
-	if  i < 0 or i > len(image[0]):
-		return 
 
 			
